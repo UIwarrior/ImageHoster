@@ -26,11 +26,16 @@ public class UserController {
     @Autowired
     private ImageService imageService;
 
+    /*
+      @method - isValidPassword
+      @parameter - password
+      This method takes the password as input, validate against the regex and returns true/false
+     */
+
     public static boolean isValidPassword(String password)
     {
-        System.out.print("password is "+password);
-        // Regex to check valid password.
-        String regex = "((?=.*[0-9])(?=.*[a-zA-Z]))";
+        // Regex to check valid password -  one letter, one digit and any special character must exist
+        String regex = "((?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^/\\w/]))";
 
         // Compile the ReGex
         Pattern p = Pattern.compile(regex);
@@ -41,10 +46,8 @@ public class UserController {
 
         Matcher m = p.matcher(password);
 
-        System.out.print("matches"+m.matches());
-        // Return if the password
-        // matched the ReGex
-        return m.matches();
+        // Return if the password matches the pattern
+        return m.lookingAt();
     }
 
 
@@ -67,10 +70,12 @@ public class UserController {
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
     public String registerUser(User user,Model model) {
 
+        // if password is valid and matches the pattern, redirect to login
         if(isValidPassword(user.getPassword())){
             userService.registerUser(user);
             return "redirect:/users/login";
         }
+        // throw error if password does not match
         else{
             String error = "Password must contain at least 1 alphabet, 1 number & 1 special character";
             model.addAttribute("User", user);
