@@ -4,6 +4,7 @@ import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import ImageHoster.service.UserService;
@@ -27,6 +28,10 @@ public class ImageController {
     private ImageService imageService;
 
     @Autowired
+    private CommentService commentService;
+
+
+    @Autowired
     private TagService tagService;
 
     //This method displays all the images in the user home page after successful login
@@ -35,17 +40,6 @@ public class ImageController {
         List<Image> images = imageService.getAllImages();
         model.addAttribute("images", images);
         return "images";
-    }
-
-
-    @RequestMapping(value = "/image/{imageId}/{imageTitle}/comments", method = RequestMethod.POST)
-    public String postComment(@PathVariable("imageId") Integer id,@PathVariable("imageTitle") String title ,@RequestParam("text") String text, Model model, HttpSession session){
-          User user = (User) session.getAttribute("loggeduser");
-          Image image = imageService.getImage(id);
-          Comment comment = new Comment(text, new Date(), image, user);
-          model.addAttribute("Comment", comment);
-          imageService.addComment(comment);
-          return "redirect:/images/" + image.getId() + "/" + image.getTitle();
     }
 
     //This method is called when the details of the specific image with corresponding title are to be displayed
@@ -61,7 +55,7 @@ public class ImageController {
     @RequestMapping("/images/{id}/{title}")
     public String showImage(@PathVariable("title") String title,@PathVariable("id") Integer id, Model model) {
         Image image = imageService.getImageByTitle(title, id);
-        List comments = imageService.getComments(id);
+        List comments = commentService.getComments(id);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
         model.addAttribute("comments", comments);
