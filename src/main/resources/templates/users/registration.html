@@ -30,7 +30,7 @@
     <input type="text" id="mobilenumber" name="mobileNumber" th:field="${User.profile.mobileNumber}"/>
 
     <input type="submit" value="Register"/>
-
+    passwordTypeError
 
     <!--Show the password type error if the password does not contain atleast 1 alphabet, 1 number & 1 special character-->
     <div th:if="${passwordTypeError}">Password must contain atleast 1 alphabet, 1 number & 1 special character</div>

@@ -73,11 +73,11 @@ public class UserController {
         // if password is valid and matches the pattern, redirect to login
         if(isValidPassword(user.getPassword())){
             userService.registerUser(user);
-            return "redirect:/users/login";
+            return "users/login";
         }
         // throw error if password does not match
         else{
-            String error = "Password must contain at least 1 alphabet, 1 number & 1 special character";
+            String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
             model.addAttribute("User", user);
             model.addAttribute("passwordTypeError", error);
             return "users/registration";
