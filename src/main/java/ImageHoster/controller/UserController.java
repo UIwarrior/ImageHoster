@@ -26,6 +26,29 @@ public class UserController {
     @Autowired
     private ImageService imageService;
 
+    /*
+      @method - isValidPassword
+      @parameter - password
+      This method takes the password as input, validate against the regex and returns true/false
+     */
+
+    public static boolean isValidPassword(String password)
+    {
+        // Regex to check valid password -  one letter, one digit and any special character must exist
+        String regex = "((?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^/\\w/]))";
+
+        // Compile the ReGex
+        Pattern p = Pattern.compile(regex);
+
+        if (password == null) {
+            return false;
+        }
+
+        Matcher m = p.matcher(password);
+
+        // Return if the password matches the pattern
+        return m.lookingAt();
+    }
 
 
     //This controller method is called when the request pattern is of type 'users/registration'
@@ -46,8 +69,20 @@ public class UserController {
     //This method calls the business logic and after the user record is persisted in the database, directs to login page
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
     public String registerUser(User user,Model model) {
+
+        // if password is valid and matches the pattern, redirect to login
+        if(isValidPassword(user.getPassword())){
             userService.registerUser(user);
-            return "redirect:/users/login";
+            return "users/login";
+        }
+        // throw error if password does not match
+        else{
+            String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
+            model.addAttribute("User", user);
+            model.addAttribute("passwordTypeError", error);
+            return "users/registration";
+        }
+
     }
 
     //This controller method is called when the request pattern is of type 'users/login'
