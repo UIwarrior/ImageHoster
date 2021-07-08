@@ -1,8 +1,8 @@
 package ImageHoster.repository;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -110,6 +110,35 @@ public class ImageRepository {
         } catch (Exception e) {
             transaction.rollback();
         }
+    }
+
+    /*
+      This method receives comment object as parameter and stores in Comment table
+     */
+    public void postComment(Comment comment) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            em.persist(comment);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+        }
+
+        return;
+    }
+
+     /*
+      This method retrieves all comments for a specific image from Comments table
+     */
+
+    public List getImageComments(Integer imageId) {
+        EntityManager em = emf.createEntityManager();
+        TypedQuery<Comment> query = em.createQuery("SELECT c from Comment c where c.image.id =:image", Comment.class);
+        query.setParameter("image", imageId);
+        List<Comment> resultList = query.getResultList();
+        return resultList;
     }
 
 }
